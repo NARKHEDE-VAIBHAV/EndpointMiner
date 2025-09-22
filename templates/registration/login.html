@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width:420px">
+  <h3 class="mb-3">Login</h3>
+  {% if form.errors %}
+    <div class="alert alert-danger">Please correct the errors below.</div>
+  {% endif %}
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="id_username" class="form-label">Username</label>
+      <input type="text" name="username" autofocus required id="id_username" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label for="id_password" class="form-label">Password</label>
+      <input type="password" name="password" required id="id_password" class="form-control">
+    </div>
+    <button class="btn btn-primary" type="submit">Login</button>
+  </form>
+</div>
+{% endblock %}
