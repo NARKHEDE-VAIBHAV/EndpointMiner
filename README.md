@@ -1,61 +1,62 @@
-# Visitor Management Django App
 
-## Setup
+# EndpointMiner
 
-1. Clone repo.
+Small, practical endpoint and API discovery tool (single-file Python script: `EndpointMiner.py`).
 
-2. Create virtual environment:
-   ```bash
-   python3 -m venv env
-   source env/bin/activate
+## Features
+- Auto crawl starting URL with polite delays and robots.txt respect
+- Manual mode: scan URL lists or HAR files
+- Proxy capture via selenium-wire or mitmdump
+- Heuristics for sensitive endpoints, JSON responses, and common secret patterns
+- Outputs `findings.json`, `endpoints.txt`, and `secrets.txt` (if any)
+
+## Quick install
+```bash
+python3 -m pip install --user requests beautifulsoup4
+# optional extras:
+python3 -m pip install --user selenium-wire selenium webdriver-manager mitmproxy pandas openpyxl
 ```
 
-Install requirements:  
+## Usage examples
 
- ```
+Auto crawl:
 
-pip install -r requirements.txt
-   ```
-
-
-
-
-
-
-Create a MySQL database and user. Example SQL:
-
-```
-CREATE DATABASE visitor_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-CREATE USER 'visitor_user'@'localhost' IDENTIFIED BY 'visitor_pass';
-GRANT ALL PRIVILEGES ON visitor_db.* TO 'visitor_user'@'localhost';
-FLUSH PRIVILEGES;
+```bash
+python3 EndpointMiner.py --mode auto --start https://example.com --depth 2 --output findings.json
 ```
 
+Manual from HAR or URL list:
 
-Copy .env from the example and update values.
-
-Run migrations:
-```
-python manage.py migrate
+```bash
+python3 EndpointMiner.py --mode manual --capture captured.har --output findings.json
 ```
 
+Proxy capture with browser (selenium-wire):
 
-
-Create a superuser: 
-```
-  python manage.py createsuperuser
-
+```bash
+python3 EndpointMiner.py --mode proxy --start https://example.com --duration 30 --capture capture_urls.txt
 ```
 
-Run the dev server:   
+Proxy capture with mitmdump:
+
+```bash
+python3 EndpointMiner.py --mode proxy-mitm --mitm-port 8080 --capture capture_urls.txt
+# configure your browser to use 127.0.0.1:8080, browse/login, then press ENTER to stop capture
 ```
-python manage.py runserver
 
-```
+## Notes and safety
 
+* Only run against targets you own or are authorized to test.
+* The tool may find secrets. Treat discovered secrets as highly sensitive and do not commit them to source control.
+* Consider adding a `--save-secrets` flag before writing secrets to disk.
 
-Visit:
+## Output
 
-http://127.0.0.1:8000/accounts/login/ to login.
+* `findings.json` - JSON with findings
+* `endpoints.txt` - newline separated endpoints
+* `secrets.txt` - discovered secret matches (if any)
 
-http://127.0.0.1:8000/ to view visitors.
+## License
+
+Add a `LICENSE` file (for example, MIT) if you want to allow reuse.
+
